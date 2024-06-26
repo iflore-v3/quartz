@@ -10,11 +10,12 @@ on:
 
 jobs:
   build-and-test:
-    if: ${{ github.repository == 'jackyzha0/quartz' }}
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    #if: ${{ github.repository == 'madprogramer/quartz-to-neocities' }}
+    #strategy:
+    #  matrix:
+    #    os: [windows-latest, macos-latest, ubuntu-latest]
+    #runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
@@ -46,26 +47,21 @@ jobs:
       - name: Ensure Quartz builds, check bundle info
         run: npx quartz build --bundleInfo
 
-  publish-tag:
-    if: ${{ github.repository == 'jackyzha0/quartz' && github.ref == 'refs/heads/v4' }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v3
+      - if: ${{ success() && github.ref == 'refs/heads/v4' }}
+        id: deploy
+        continue-on-error: true
+        uses: bcomnes/deploy-to-neocities@v1
         with:
-          fetch-depth: 0
-      - name: Setup Node
-        uses: actions/setup-node@v3
+          api_token: ${{ secrets.NEOCITIES_API_KEY }}
+          dist_dir: public #Have to do it this way because .template is unrecognized
+          cleanup: true
+
+      # Step 3 B: Try the Fallback
+      - name: Deploy to Neocities fallback
+        #if: ${{ steps.deploy.outcome == 'failure' && github.ref == 'refs/heads/main' }}
+        if: ${{ steps.deploy.outcome == 'failure' && github.ref == 'refs/heads/madpro.neocities.org' }}
+        uses: jonchang/deploy-neocities@master
         with:
-          node-version: 18
-      - name: Get package version
-        run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
-      - name: Create release tag
-        uses: pkgdeps/git-tag-action@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          github_repo: ${{ github.repository }}
-          version: ${{ env.PACKAGE_VERSION }}
-          git_commit_sha: ${{ github.sha }}
-          git_tag_prefix: "v"
+          key: ${{ secrets.NEOCITIES_API_KEY }}
+          dir: public
+          clean: true
