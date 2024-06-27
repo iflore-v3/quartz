@@ -1,0 +1,1 @@
+[[İzmir Fen Lisesi]]'nin kısaltmasıdır.

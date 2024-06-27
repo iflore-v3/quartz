@@ -4,5 +4,5 @@
 
 (Yakında!)
 
-- [[İFL]]
-- 
+- [[İFLOR Hakkında]]
+- [[İzmir Fen Lisesi]]

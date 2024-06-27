@@ -1,1 +1,1 @@
-İzmir Fen Lisesi'nin kısaltması.
+[[İzmir Fen Lisesi]]'nin kısaltması.
