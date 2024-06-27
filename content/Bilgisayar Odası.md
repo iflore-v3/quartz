@@ -1,0 +1,1 @@
+![[bilgisayar-odasi-ocak-2023.png]]
